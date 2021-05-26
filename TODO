@@ -1,0 +1,7 @@
+0. Refactor for naive MS
+1. Implement optimization
+    a. create a kd tree
+    b. ???
+    c. profit
+2. Compare results
+3. Apply MS to stuff
