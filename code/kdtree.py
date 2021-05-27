@@ -10,11 +10,11 @@ SPACE_COUNT = 10
 # TODO: vectorize everything that is possible to vectorize
 class KDNode():
     # __init__(): constructor for KDNode, takes in point to store as data
-    def __init__(self, point, left, right):
-        print(point.shape)
+    def __init__(self, point, left, right, count):
         self.point = point
         self.left = left
         self.right = right
+        self.count = count # how many of that point there are (counts equals)
 
 # Implementation of KDTree data structure for partitioning of data
 class KDTree:
@@ -23,6 +23,7 @@ class KDTree:
     def __init__(self, dimensions, dataset):
         self.dimensions = dimensions
         self.num_nodes = 0
+        self.num_datum = 0 # how much data this given tree represents
 
         # create the tree from the given data (no root node yet, function returns the root node of the tree)
         self.root = self.__create_tree(dataset, 0) # start from depth = 0
@@ -38,7 +39,8 @@ class KDTree:
         if len(current_dataset) == 1:
             point = np.reshape(current_dataset, (self.dimensions, ))
             self.num_nodes += 1
-            return KDNode(point, None, None)
+            self.num_datum += 1
+            return KDNode(point, None, None, 1) # no duplicates
 
         # rotate dimensions
         dimension = depth % self.dimensions
@@ -47,32 +49,36 @@ class KDTree:
         median = self.__get_median(dimension, current_dataset)
 
         # split dataset into less than and greater than median along dimension
-        l_data, ge_data = self.__split_dataset(dimension, median, current_dataset)
+        l_data, ge_data, duplicates = self.__split_dataset(dimension, median, current_dataset)
 
         # create node
+        node = KDNode(median, self.__create_tree(l_data, depth + 1), self.__create_tree(ge_data , depth + 1), duplicates)
         self.num_nodes += 1
-        node = KDNode(median, self.__create_tree(l_data, depth + 1), self.__create_tree(ge_data , depth + 1))
+        self.num_datum += duplicates
         return node
 
     # __split_dataset(): function to split a dataset into one less than the median along a dimension and one greater (or equal) to the median along the dimension
     # input: median, dimension, dataset:
-    # output: tuple with 0-index as less than dataset and 1-index as greater/equal to dataset
+    # output: tuple with 0-index as less than dataset and 1-index as greater/equal to dataset, also the number of duplicate medians found
     def __split_dataset(self, dimension, median, data):
         # initialize new datasets
         l_data = []
         ge_data = [] 
 
         # linear search through data
-        num_equal = 0
+        duplicates = 0
         for point in data:
             if not np.array_equal(point, median): # don't add the median
                 if point[dimension] < median[dimension]:
                     l_data.append(point)
                 else:
                     ge_data.append(point)
+            else:
+                duplicates += 1
+
 
         # return
-        return (np.array(l_data), np.array(ge_data))
+        return (np.array(l_data), np.array(ge_data), duplicates)
 
     # __get_median(): function to find the median along a certain dimension from a dataset
     # input: dimension, data
@@ -100,9 +106,9 @@ class KDTree:
 
             # print current node
             print("\n")
-            for i in range(SPACE_COUNT, space):
+            for i in range(0, space):
                 print(end = " ") 
-            print(node.point)
+            print(node.point, node.count)
             self.__print_tree_helper(node.left, space + SPACE_COUNT) # same level
 
     # print_tree(): function to print the kdtree using an in-order traversal in 2d
