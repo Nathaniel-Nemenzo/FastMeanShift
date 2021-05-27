@@ -27,6 +27,7 @@ class KDTree:
     # input: node to create the tree from, current dataset, depth of the tree
     # output: root node of the tree
     def __create_tree(self, current_dataset, depth):
+        print(depth)
         # base case(s), no more data or only one point
         if len(current_dataset) == 0:
             return None
@@ -56,11 +57,19 @@ class KDTree:
         ge_data = [] 
 
         # linear search through data
+        num_equal = 0
         for point in data:
             if point[dimension] < median[dimension]:
                 l_data.append(point)
-            else:
+            elif point[dimension] > median[dimension]: 
                 ge_data.append(point)
+            else:
+                # arbitrary so we don't hit case where two equal
+                if num_equal % 2 == 0:
+                    l_data.append(point)
+                else:
+                    ge_data.append(point)
+                num_equal += 1
 
         # return
         return (np.array(l_data), np.array(ge_data))
@@ -74,7 +83,7 @@ class KDTree:
 
         # randomly select points (depending on data size) from data
         indices = np.random.choice(len(data), size = sample_size, replace = False)
-        random_data = data[indices]
+        random_data = data[indices.astype(int)]
 
         # sort these points by dimension specified
         sorted_data = random_data[random_data[:, dimension].argsort(kind = 'mergesort')]
