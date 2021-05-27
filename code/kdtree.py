@@ -3,12 +3,15 @@ import numpy as np
 # x value for calculating representative sample size for random sampling of dataset
 # per: https://select-statistics.co.uk/calculators/sample-size-calculator-population-proportion/#:~:text=This%20calculator%20uses%20the%20following,X%20%2B%20N%20%E2%80%93%201)%2C&text=and%20Z%CE%B1%2F2%20is,N%20is%20the%20population%20size.
 SAMPLE_SIZE_X = 1800
+SPACE_COUNT = 10
 
 # Implementation of nodes to place inside the KDTree, a binary tree where every LEAF node is a multi-dimensional point
 # per: https://en.wikipedia.org/wiki/K-d_tree
+# TODO: vectorize everything that is possible to vectorize
 class KDNode():
     # __init__(): constructor for KDNode, takes in point to store as data
     def __init__(self, point, left, right):
+        print(point.shape)
         self.point = point
         self.left = left
         self.right = right
@@ -19,6 +22,7 @@ class KDTree:
     # input: dimensions of point in the kd tree, set of points to create the kdtree from
     def __init__(self, dimensions, dataset):
         self.dimensions = dimensions
+        self.num_nodes = 0
 
         # create the tree from the given data (no root node yet, function returns the root node of the tree)
         self.root = self.__create_tree(dataset, 0) # start from depth = 0
@@ -27,13 +31,14 @@ class KDTree:
     # input: node to create the tree from, current dataset, depth of the tree
     # output: root node of the tree
     def __create_tree(self, current_dataset, depth):
-        print(depth)
         # base case(s), no more data or only one point
         if len(current_dataset) == 0:
             return None
         
         if len(current_dataset) == 1:
-            return KDNode(current_dataset, None, None)
+            point = np.reshape(current_dataset, (self.dimensions, ))
+            self.num_nodes += 1
+            return KDNode(point, None, None)
 
         # rotate dimensions
         dimension = depth % self.dimensions
@@ -45,6 +50,7 @@ class KDTree:
         l_data, ge_data = self.__split_dataset(dimension, median, current_dataset)
 
         # create node
+        self.num_nodes += 1
         node = KDNode(median, self.__create_tree(l_data, depth + 1), self.__create_tree(ge_data , depth + 1))
         return node
 
@@ -59,17 +65,11 @@ class KDTree:
         # linear search through data
         num_equal = 0
         for point in data:
-            if point[dimension] < median[dimension]:
-                l_data.append(point)
-            elif point[dimension] > median[dimension]: 
-                ge_data.append(point)
-            else:
-                # arbitrary so we don't hit case where two equal
-                if num_equal % 2 == 0:
+            if not np.array_equal(point, median): # don't add the median
+                if point[dimension] < median[dimension]:
                     l_data.append(point)
                 else:
                     ge_data.append(point)
-                num_equal += 1
 
         # return
         return (np.array(l_data), np.array(ge_data))
@@ -90,3 +90,21 @@ class KDTree:
 
         # return approximate median
         return sorted_data[int(sample_size / 2)]
+
+    # __print_tree_helper(): helper function to print tree representation
+    def __print_tree_helper(self, node, space):
+        # base case: no node
+        if node != None:
+            # go right first
+            self.__print_tree_helper(node.right, space + SPACE_COUNT)
+
+            # print current node
+            print("\n")
+            for i in range(SPACE_COUNT, space):
+                print(end = " ") 
+            print(node.point)
+            self.__print_tree_helper(node.left, space + SPACE_COUNT) # same level
+
+    # print_tree(): function to print the kdtree using an in-order traversal in 2d
+    def print_tree(self):
+        self.__print_tree_helper(self.root, 0) # no space at first
