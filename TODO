@@ -1,8 +1,9 @@
-0. Refactor for naive MS
-1. Implement optimization
-    a. create a kd tree
-    b. test
-    c. ???
-    d. profit
+0. Refactor for naive MS ✓
+1. Implement optimization ✓
+    a. create a kd tree ✓
+    b. test kd tree ✓
+    c. revise kd tree to fit mean-shift task (bounding box)
+    d. ???
+    e. profit
 2. Compare results
 3. Apply MS to stuff

@@ -6,11 +6,11 @@ from meanshift import MeanShift
 
 def cluster(data):
     # create meanshift object
-    ms = MeanShift('gaussian')
+    ms = MeanShift('gaussian', data)
 
     # do meanshift
     start = time.time()
-    results = ms.do(data, bandwidth = 2, convergence_limit = 0.00001)
+    results = ms.do(bandwidth = 2, convergence_limit = 0.00001)
     end = time.time()
     print("elapsed time: ", end - start)
 
