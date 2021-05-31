@@ -61,6 +61,7 @@ class DualTreeMeanShift():
         if kernel == 'multivariate gaussian':
             self.kernel = utils.gaussian_kernel_correlations
 
+        # save reference set
         self.reference_set = reference_set
 
         # create trees (query and reference are same at beginning)
@@ -72,6 +73,8 @@ class DualTreeMeanShift():
     # output: converged query set
     def do(self, bandwidth, error_bound):
         pass
+
+
 
 # Class that returns result from a mean-shift algorithm
 class MeanShiftResult:
