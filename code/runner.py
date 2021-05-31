@@ -8,21 +8,26 @@ def test(data):
     start = time.time()
     kdtree = KDTree(2, data) # two dimensional data (x, y)
     end = time.time()
+    print("data size: ", len(data))
     print("test_data time elapsed: ", end - start)
 
     # smaller image
     im = Image.open('../photos/p0973lkk.jpeg', 'r')
+    pixels = np.array(list(im.getdata()))
     start = time.time()
-    kdtree = KDTree(3, np.array(list(im.getdata())))
+    kdtree = KDTree(3, pixels)
     end = time.time()
+    print("data size: ", len(pixels))
     print("photo time elapsed: ", end - start)
 
     # big image
-#    im = Image.open('../photos/ntFmJUZ8tw3ULD3tkBaAtf.jpeg', 'r')
-#    start = time.time()
-#    kdtree = KDTree(3, np.array(list(im.getdata())))
-#    end = time.time()
-#    print("photo time elapsed: ", end - start)
+    im = Image.open('../photos/ntFmJUZ8tw3ULD3tkBaAtf.jpeg', 'r')
+    pixels = np.array(list(im.getdata()))
+    start = time.time()
+    kdtree = KDTree(3, pixels)
+    end = time.time()
+    print("data size: ", len(pixels))
+    print("photo time elapsed: ", end - start)
 
-data = np.genfromtxt('../small_test_data.csv', delimiter = ',')
+data = np.genfromtxt('../test_data.csv', delimiter = ',')
 test(data)

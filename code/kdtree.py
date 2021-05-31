@@ -2,14 +2,13 @@ import time
 import math
 import numpy as np
 
-# TODO: NEW KD NODE WITH BOUND BOXES
 # x value for calculating representative sample size for random sampling of dataset
 # per: https://select-statistics.co.uk/calculators/sample-size-calculator-population-proportion/#:~:text=This%20calculator%20uses%20the%20following,X%20%2B%20N%20%E2%80%93%201)%2C&text=and%20Z%CE%B1%2F2%20is,N%20is%20the%20population%20size.
 SAMPLE_SIZE_X = 1800
 SPACE_COUNT = 10
 
 # Implementation of nodes to place inside the KDTree, a binary tree where every LEAF node is a multi-dimensional point # per: https://en.wikipedia.org/wiki/K-d_tree
-# TODO: take out unneeded calculations
+# TODO: NEW KD NODE WITH BOUND BOXES
 class KDNode():
     # __init__(): constructor for KDNode, takes in point to store as data
     def __init__(self, point, left, right, count, data):
@@ -18,6 +17,11 @@ class KDNode():
         self.right = right
         self.count = count # how many of that point there are (counts equals)
         self.data = data # what data this node splits (ex: root will have full dataset, depth of 1 will have ~ half of the full dataset, and so on)
+        self.boundaries = self.__get_boundaries(data)
+
+    # __get_boundaries(): function to get the boundary points for the current dataset (just the min/max along a dimension for all dimensions into one vector)
+    def __get_boundaries(self, data):
+        return (np.amin(data, axis = 0), np.amax(data, axis = 0))
 
 # Implementation of KDTree data structure for partitioning of data
 class KDTree:
