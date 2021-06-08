@@ -52,6 +52,8 @@ class MeanShift:
         return numerator / weights.sum()
 
 # Class that implements the dual tree mean-shift algorithm
+# IDEA: Use a KDTree which holds references instead of copies.
+    # - this way, we can change the actual values.
 class DualTreeMeanShift():
     # __init__(): Constructor for MeanShift class, takes in the kernel for the algorithm
     # input: kernel to use in mean shift for kde
@@ -69,15 +71,48 @@ class DualTreeMeanShift():
         self.query_tree = KDTree(self.reference_set.shape[1], self.reference_set)
 
     # do(): Perform the dual tree mean shift algorithm to find the modes
-    # input: bandwidth, error bound
+    # input: bandwidth, error bound, some convergence limit
     # output: converged query set
-    def do(self, bandwidth, error_bound):
+    def do(self, bandwidth, error_bound, convergence_limit):
+        # initialize distances array
+        distances = [float('inf')] * len(self.reference_set)
+        
+        # go until max is greater than convergence limit
+        while True: # needs to be changed to implement convergence (how ??)
+            # find approximated m(x) vector
+            m_x = self.ms_dualtree(query_tree.root, reference_tree.root)
+
+            # rebuild query tree with new mean shift vector
+            self.query_tree = KDTree(self.reference_set.shape[1], m_x)
+
+        # query tree
+
+    # ms_dualtree(): helper function for do, implements recursion for algorithm
+    # input: Q node and R node
+    # output: (when recursion is finished) approximated m(x) vector
+    # side effect: rebuilds query tree
+    def ms_dualtree(self, Q, R):
         pass
 
+    # ms_dualtree_base(): base function for ms_dualtree()
+    # input: Q node and R node
+    # output: updates min and max bounds and updates x_q for the singular point
+    def ms_dualtree_base(self, Q, R):
+        pass
 
+    # can_approximate(): function to ensure local pruning criterion
+    # input: query node Q and reference node R
+    # output: boolean whether we can approximate or not
+    def can_approximate(self, Q, R):
+        pass
 
-# Class that returns result from a mean-shift algorithm
-class MeanShiftResult:
+    # approximate(): function to approximate an R node's contribution to numerator and denominator of m(x) 
+    # input: query node Q and reference node R
+    # output: update min and max bounds and updates x_q for all points in Q
+    def approximate(self):
+        pass
+
+# Class that returns result from a mean-shift algorithm class MeanShiftResult:
     def __init__(self, reference_set, query_set):
         self.reference_set = reference_set
         self.query_set = query_set

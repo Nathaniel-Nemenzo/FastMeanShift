@@ -29,5 +29,5 @@ def test(data):
     print("data size: ", len(pixels))
     print("photo time elapsed: ", end - start)
 
-data = np.genfromtxt('../test_data.csv', delimiter = ',')
+data = np.genfromtxt('../small_test_data.csv', delimiter = ',')
 test(data)
