@@ -1,7 +1,7 @@
 import numpy as np
 import time
 from PIL import Image
-from kdtree import KDTree
+from kdtree import KDTree, KDTreeIndices
 
 def test(data):
     # test data
@@ -29,5 +29,5 @@ def test(data):
     print("data size: ", len(pixels))
     print("photo time elapsed: ", end - start)
 
-data = np.genfromtxt('../small_test_data.csv', delimiter = ',')
+data = np.genfromtxt('../small_test_data_dup.csv', delimiter = ',')
 test(data)
